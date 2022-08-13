@@ -14,6 +14,7 @@ public class Position {
     }
 
     public Integer getRow() {
+
         return row;
     }
 
