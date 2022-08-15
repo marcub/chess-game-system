@@ -1,7 +1,7 @@
 package application;
 
-import boardgame.Position;
 import chess.ChessMatch;
+import chess.ChessPosition;
 import chessConsole.UI;
 
 public class Program {
@@ -9,5 +9,8 @@ public class Program {
 
         ChessMatch chessMatch = new ChessMatch();
         UI.printBoard(chessMatch.getPieces());
+
+        ChessPosition chessPosition = new ChessPosition('d', 2);
+        System.out.print("\n" + chessPosition.toPosition());
     }
 }
