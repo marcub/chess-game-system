@@ -45,7 +45,7 @@ public class Board {
     }
 
     public Boolean positionExists(Position position) {
-        return position.getRow() < rows && position.getColumn() < columns;
+        return position.getRow() >= 0 && position.getRow() < rows && position.getColumn() >=0 && position.getColumn() < columns;
     }
 
     public Boolean thereIsAPiece(Position position) {
