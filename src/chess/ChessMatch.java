@@ -1,7 +1,6 @@
 package chess;
 
 import boardgame.Board;
-import boardgame.BoardException;
 import boardgame.Piece;
 import boardgame.Position;
 import chess.pieces.King;
@@ -10,14 +9,26 @@ import chess.pieces.Rook;
 public class ChessMatch {
 
     private Board board;
+    private Integer turn;
+    private Color currentPlayer;
 
     public ChessMatch() {
         board = new Board(8, 8);
+        turn = 1;
+        currentPlayer = Color.WHITE;
         initialSetup();
     }
 
+    public Integer getTurn() {
+        return turn;
+    }
+
+    public Color getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     /*Método responsável por transformar a matriz Piece em ChessPiece,
-    pois o ChessLayer não deve ter acesso ao BoardLayer.*/
+        pois o ChessLayer não deve ter acesso ao BoardLayer.*/
     public ChessPiece[][] getPieces() {
         ChessPiece[][] matrizAux = new ChessPiece[board.getRows()][board.getColumns()];
         for (int i=0; i<board.getRows(); i++) {
@@ -54,6 +65,7 @@ public class ChessMatch {
         validateSourcePosition(source);
         validateTargetPosition(source, target);
         Piece capturedPiece = makeMove(source, target);
+        nextTurn();
         return (ChessPiece) capturedPiece;
     }
 
@@ -67,6 +79,10 @@ public class ChessMatch {
     private void validateSourcePosition(Position source) {
         if (!board.thereIsAPiece(source)) {
             throw new ChessException("There is no piece on source position!");
+        }
+        ChessPiece auxChessPiece = (ChessPiece) board.piece(source);
+        if (auxChessPiece.getColor() != currentPlayer) {
+            throw new ChessException("This piece isn't yours.");
         }
         if (!board.piece(source).isThereAnyPossibleMove()) {
             throw new ChessException("There is no possible move to source piece.");
@@ -83,6 +99,11 @@ public class ChessMatch {
         Position position = sourcePosition.toPosition();
         validateSourcePosition(position);
         return board.piece(position).possibleMoves();
+    }
+
+    private void nextTurn() {
+        turn++;
+        currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
     }
 
 }
