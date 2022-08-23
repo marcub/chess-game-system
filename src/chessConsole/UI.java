@@ -1,5 +1,7 @@
 package chessConsole;
 
+import boardgame.Piece;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.Color;
@@ -34,7 +36,18 @@ public class UI {
         for (int i = 0; i<pieces.length; i++) {
             System.out.print((pieces.length-i) + " ");
             for (int f = 0; f<pieces.length; f++) {
-                printPiece(pieces[i][f]);
+                printPiece(pieces[i][f], false);
+            }
+            System.out.println();
+        }
+        System.out.println("  a b c d e f g h");
+    }
+
+    public static void printBoard(ChessPiece[][] pieces, boolean[][] possibleMoves) {
+        for (int i = 0; i<pieces.length; i++) {
+            System.out.print((pieces.length-i) + " ");
+            for (int f = 0; f<pieces.length; f++) {
+                printPiece(pieces[i][f], possibleMoves[i][f]);
             }
             System.out.println();
         }
@@ -47,9 +60,12 @@ public class UI {
         System.out.flush();
     }
 
-    public static void printPiece(ChessPiece piece) {
+    public static void printPiece(ChessPiece piece, boolean background) {
+        if (background) {
+            System.out.print(ANSI_RED_BACKGROUND);
+        }
         if (piece == null) {
-            System.out.print("-");
+            System.out.print("-" + ANSI_RESET);
         }
         else {
             if (piece.getColor() == Color.WHITE) {
