@@ -6,8 +6,11 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.Color;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class UI {
 
@@ -32,8 +35,10 @@ public class UI {
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
-    public static void printMatch(ChessMatch chessMatch) {
+    public static void printMatch(ChessMatch chessMatch, List<ChessPiece> capturedPieces) {
         printBoard(chessMatch.getPieces());
+        System.out.println();
+        printCapturedPieces(capturedPieces);
         System.out.println();
         System.out.printf("Turn : %d\n", chessMatch.getTurn());
         System.out.printf("Waiting player : %s\n", chessMatch.getCurrentPlayer());
@@ -84,6 +89,10 @@ public class UI {
         System.out.print(" ");
     }
 
+    public static void printCapturedPieces(ChessMatch chessMatch) {
+        System.out.println("Captured pieces:");
+    }
+
     public static ChessPosition readChessPosition(Scanner input) {
         try {
             String chessPosition = input.nextLine();
@@ -94,5 +103,18 @@ public class UI {
         catch (RuntimeException e) {
             throw new InputMismatchException("Error reading ChessPosition. Put a valid value from a1 to h8.");
         }
+    }
+
+    private static void printCapturedPieces(List<ChessPiece> captured) {
+        List<ChessPiece> whiteCaptured = captured.stream().filter(x -> x.getColor() == Color.WHITE).collect(Collectors.toList());
+        List<ChessPiece> blackCaptured = captured.stream().filter(x -> x.getColor() == Color.BLACK).collect(Collectors.toList());
+
+        System.out.println("Captured pieces:");
+        System.out.print(ANSI_WHITE);
+        System.out.println("White: " + whiteCaptured);
+        System.out.print(ANSI_RESET);
+        System.out.print(ANSI_YELLOW);
+        System.out.println("Black: " + blackCaptured);
+        System.out.print(ANSI_RESET);
     }
 }
