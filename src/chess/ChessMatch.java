@@ -17,6 +17,8 @@ public class ChessMatch {
     private Color currentPlayer;
     private Boolean check;
 
+    private Boolean checkMate;
+
     private List<Piece> piecesOnTheBoard;
     private List<Piece> capturedPieces;
 
@@ -27,6 +29,7 @@ public class ChessMatch {
         piecesOnTheBoard = new ArrayList<>();
         capturedPieces = new ArrayList<>();
         check = false;
+        checkMate = false;
         initialSetup();
     }
 
@@ -40,6 +43,10 @@ public class ChessMatch {
 
     public boolean getCheck() {
         return check;
+    }
+
+    public boolean getCheckMate() {
+        return checkMate;
     }
 
     /*Método responsável por transformar a matriz Piece em ChessPiece,
@@ -60,19 +67,12 @@ public class ChessMatch {
     }
 
     private void initialSetup() {
-        placeNewPiece('c', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('c', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 1, new King(board, Color.WHITE));
+        placeNewPiece('h', 7, new Rook(board, Color.WHITE));
+        placeNewPiece('d', 1, new Rook(board, Color.WHITE));
+        placeNewPiece('e', 1, new King(board, Color.WHITE));
 
-        placeNewPiece('c', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('c', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 8, new King(board, Color.BLACK));
+        placeNewPiece('b', 8, new Rook(board, Color.BLACK));
+        placeNewPiece('a', 8, new King(board, Color.BLACK));
     }
 
     public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
@@ -86,7 +86,12 @@ public class ChessMatch {
             throw new ChessException("You can't put yourself in check!");
         }
         check = testCheck(opponent(currentPlayer));
-        nextTurn();
+
+        if (testCheckMate(opponent(currentPlayer))) {
+            checkMate = true;
+        } else {
+            nextTurn();
+        }
         return (ChessPiece) capturedPiece;
     }
 
@@ -170,4 +175,28 @@ public class ChessMatch {
         return false;
     }
 
+    private boolean testCheckMate(Color color) {
+        if (!testCheck(color)) {
+            return false;
+        }
+        List<Piece> colorList = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+        for (Piece e : colorList) {
+            boolean[][] auxMoves = e.possibleMoves();
+            for (int i = 0; i<auxMoves.length; i++) {
+                for (int j = 0; j< auxMoves.length; j++) {
+                    if (auxMoves[i][j]) {
+                        Position source = ((ChessPiece) e).getChessPosition().toPosition();
+                        Position target = new Position(i,j);
+                        Piece capturedPiece = makeMove(source, target);
+                        boolean testCheck = testCheck(color);
+                        undoMove(source, target, capturedPiece);
+                        if (!testCheck) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }
