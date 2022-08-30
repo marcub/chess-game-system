@@ -5,21 +5,63 @@ import boardgame.Position;
 import chess.ChessPiece;
 import chess.Color;
 
-public class Bishop extends ChessPiece {
+public class Queen extends ChessPiece {
 
-    public Bishop(Board board, Color color) {
+
+    public Queen(Board board, Color color) {
         super(board, color);
     }
 
     @Override
     public String toString() {
-        return "B";
+        return "Q";
     }
+
 
     @Override
     public boolean[][] possibleMoves() {
         boolean[][] matPossibleMoves = new boolean[getBoard().getRows()][getBoard().getColumns()];
         Position auxPosition = new Position(0, 0);
+
+        //Above
+        auxPosition.setValues(position.getRow() - 1, position.getColumn());
+        while(getBoard().positionExists(auxPosition) && !getBoard().thereIsAPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+            auxPosition.setRow(auxPosition.getRow() - 1);
+        }
+        if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+        }
+
+        //Below
+        auxPosition.setValues(position.getRow() + 1, position.getColumn());
+        while(getBoard().positionExists(auxPosition) && !getBoard().thereIsAPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+            auxPosition.setRow(auxPosition.getRow() + 1);
+        }
+        if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+        }
+
+        //Left
+        auxPosition.setValues(position.getRow(), position.getColumn() - 1);
+        while(getBoard().positionExists(auxPosition) && !getBoard().thereIsAPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+            auxPosition.setColumn(auxPosition.getColumn() - 1);
+        }
+        if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+        }
+
+        //Right
+        auxPosition.setValues(position.getRow(), position.getColumn() + 1);
+        while(getBoard().positionExists(auxPosition) && !getBoard().thereIsAPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+            auxPosition.setColumn(auxPosition.getColumn() + 1);
+        }
+        if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
+            matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
+        }
 
         //Northeast
         auxPosition.setValues(position.getRow() - 1, position.getColumn() + 1);
