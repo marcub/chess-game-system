@@ -1,15 +1,19 @@
 package chess.pieces;
 
 import boardgame.Board;
+import boardgame.Piece;
 import boardgame.Position;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.Color;
 
 public class Pawn extends ChessPiece {
 
+    private ChessMatch chessMatch;
 
-    public Pawn(Board board, Color color) {
+    public Pawn(Board board, Color color, ChessMatch chessMatch) {
         super(board, color);
+        this.chessMatch = chessMatch;
     }
 
     @Override
@@ -42,7 +46,20 @@ public class Pawn extends ChessPiece {
             if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
                 matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
             }
+
+            //Special Move - En Passant (White)
+            if (position.getRow() == 3) {
+                Position leftPosition = new Position(position.getRow(), position.getColumn() - 1);
+                if (getBoard().positionExists(leftPosition) && isThereOpponentPiece(leftPosition) && getBoard().piece(leftPosition) == chessMatch.getEnPassantVulnerable()) {
+                    matPossibleMoves[position.getRow() - 1][position.getColumn() - 1] = true;
+                }
+                Position rightPosition = new Position(position.getRow(), position.getColumn() + 1);
+                if (getBoard().positionExists(rightPosition) && isThereOpponentPiece(rightPosition) && getBoard().piece(rightPosition) == chessMatch.getEnPassantVulnerable()) {
+                    matPossibleMoves[position.getRow() - 1][position.getColumn() + 1] = true;
+                }
+            }
         }
+
 
         if (getColor() == Color.BLACK) {
             auxPosition.setValues(position.getRow() + 1, position.getColumn());
@@ -64,8 +81,26 @@ public class Pawn extends ChessPiece {
             if (getBoard().positionExists(auxPosition) && isThereOpponentPiece(auxPosition)) {
                 matPossibleMoves[auxPosition.getRow()][auxPosition.getColumn()] = true;
             }
+
+            //Special Move - En Passant (Black)
+            if (position.getRow() == 4) {
+                Position leftPosition = new Position(position.getRow(), position.getColumn() - 1);
+                if (getBoard().positionExists(leftPosition) && isThereOpponentPiece(leftPosition) && getBoard().piece(leftPosition) == chessMatch.getEnPassantVulnerable()) {
+                    matPossibleMoves[position.getRow() + 1][position.getColumn() - 1] = true;
+                }
+                Position rightPosition = new Position(position.getRow(), position.getColumn() + 1);
+                if (getBoard().positionExists(rightPosition) && isThereOpponentPiece(rightPosition) && getBoard().piece(rightPosition) == chessMatch.getEnPassantVulnerable()) {
+                    matPossibleMoves[position.getRow() + 1][position.getColumn() + 1] = true;
+                }
+            }
         }
 
         return matPossibleMoves;
+    }
+
+    private boolean testEnPassant (ChessPiece enPassantPiece) {
+        char enPassantColumn = enPassantPiece.getChessPosition().getColumn();
+        char currentPawnColumn = getChessPosition().getColumn();
+        return enPassantColumn == currentPawnColumn + 1 || enPassantColumn == currentPawnColumn - 1;
     }
 }
